@@ -1,0 +1,159 @@
+name: 'Deploy 🚀'
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+env:
+  NDK_VERSION: "27.2.12479018"
+  TAURI_VERSION: "^2.0.0"
+
+jobs:
+  deploy:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    environment:
+      name: production
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+      contents: write
+      discussions: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows
+          - os: 'windows-latest'
+            target: 'x86_64-pc-windows-msvc'
+            name: 'Windows x86_64 🪟'
+          - os: 'windows-latest'
+            target: 'aarch64-pc-windows-msvc'
+            name: 'Windows ARM64 🪟'
+          # MacOS
+          - os: 'macos-latest'
+            target: 'aarch64-apple-darwin'
+            name: 'MacOS ARM64 🍏'
+          - os: 'macos-13'
+            target: 'x86_64-apple-darwin'
+            name: 'MacOS x86_64 🍏'
+          # Linux
+          - os: 'ubuntu-latest'
+            target: 'x86_64-unknown-linux-gnu'
+            name: 'Linux 🐧'
+          # Android
+          - os: 'ubuntu-latest'
+            target: 'aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android'
+            name: 'Android 🤖'
+          # iOS
+          - os: 'macos-latest'
+            target: 'aarch64-apple-ios aarch64-apple-ios-sim'
+            name: 'iOS 📱'
+          # Web
+          - os: 'ubuntu-latest'
+            target: ''
+            name: 'Web 🌐'
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Cache Rust 🦀
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ matrix.target }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Set Cargo version 📦
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          mv Cargo.toml Cargo.toml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
+          mv Cargo.lock Cargo.lock.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
+          mv src-tauri/Cargo.toml src-tauri/Cargo.toml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.toml.orig >src-tauri/Cargo.toml
+          mv src-tauri/Cargo.lock src-tauri/Cargo.lock.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.lock.orig >src-tauri/Cargo.lock
+
+      - name: Setup Rust Targets 🦀
+        if: ${{ matrix.name != 'Web 🌐'}}
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Setup Java ☕
+        if: ${{ matrix.name == 'Android 🤖'}}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '21'
+
+      - name: Setup Android 🤖
+        if: ${{ matrix.name == 'Android 🤖'}}
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Dependencies & Configs 🛠️
+        shell: bash
+        run: |
+          if [[ ${{ matrix.os }} == "macos-latest" ]]; then
+            brew install openssl
+          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev curl wget file libxdo-dev libayatana-appindicator3-dev librsvg2-dev -y
+          fi
+
+          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
+            sdkmanager "ndk;$NDK_VERSION"
+          fi
+
+          wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.18.4/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
+          cargo install tauri-cli --version $TAURI_VERSION --locked
+
+      - name: Build & Deploy ${{ matrix.name }} 🚀
+        run: |
+          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
+            cargo tauri android build --ci --apk --aab --targets ${{ matrix.target }}
+          elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
+            cargo tauri ios build --ci --targets ${{ matrix.target }}
+          elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
+            ./trunk build --release --public-url "${GITHUB_REPOSITORY#*/}"
+          else
+            cargo tauri build --ci
+          fi
+
+      - name: Upload web files as artifacts 📦
+        if: ${{ matrix.name == 'Web 🌐'}}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy to Github Pages 🌐
+        if: ${{ matrix.name == 'Web 🌐'}}
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Upload Artifacts 📦
+        if: ${{ matrix.name != 'Web 🌐'}}
+        shell: bash
+        run: |
+          if [[ "${{ matrix.name }}" == "Windows x86_64 🪟" ]]; then
+            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/windows/bundle/dx-app.exe
+          elif [[ "${{ matrix.name }}" == "Windows ARM64 🪟" ]]; then
+            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/windows/bundle/dx-app.exe
+          elif [[ "${{ matrix.name }}" == "Linux 🐧" ]]; then
+            gh release upload ${{ github.ref_name }} target/release/bundle/deb/zetta-project_${{ github.ref_name }}_amd64.deb
+            gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}-.x86_64.rpm
+            gh release upload ${{ github.ref_name }} target/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage
+          elif [[ "${{ matrix.name }}" == "MacOS ARM64 🍏" ]]; then
+            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/macos/bundle/dmg/DxApp_${{ github.ref_name }}_aarch64.dmg
+          elif [[ "${{ matrix.name }}" == "MacOS x86_64 🍏" ]]; then
+            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/macos/bundle/dmg/DxApp_${{ github.ref_name }}_x64.dmg
+          elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
+            zip -r ios.zip target/dx/dx-app/release/ios/DxApp.app
+            gh release upload ${{ github.ref_name }} ios.zip
+          elif [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
+            gh release upload ${{ github.ref_name }} target/dx/dx-app/release/android/app/app/build/outputs/apk/debug/app-debug.apk
+          fi
