@@ -163,5 +163,8 @@ jobs:
             zip -r ios.zip target/dx/dx-app/release/ios/DxApp.app
             gh release upload ${{ github.ref_name }} ios.zip
           elif [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
-            gh release upload ${{ github.ref_name }} target/dx/dx-app/release/android/app/app/build/outputs/apk/debug/app-debug.apk
+            mv /src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk /src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk
+            mv src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
+            gh release upload ${{ github.ref_name }} /src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk
+            gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
           fi
