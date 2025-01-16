@@ -74,12 +74,8 @@ jobs:
         run: |
           mv Cargo.toml Cargo.toml.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
-          mv Cargo.lock Cargo.lock.orig
-          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.lock.orig >Cargo.lock
           mv src-tauri/Cargo.toml src-tauri/Cargo.toml.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.toml.orig >src-tauri/Cargo.toml
-          mv src-tauri/Cargo.lock src-tauri/Cargo.lock.orig
-          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.lock.orig >src-tauri/Cargo.lock
 
       - name: Setup Rust Targets 🦀
         if: ${{ matrix.name != 'Web 🌐'}}
