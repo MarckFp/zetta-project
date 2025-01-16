@@ -30,32 +30,40 @@ jobs:
           - os: 'windows-latest'
             target: 'x86_64-pc-windows-msvc'
             name: 'Windows x86_64 🪟'
+            platform: 'windows'
           - os: 'windows-latest'
             target: 'aarch64-pc-windows-msvc'
             name: 'Windows ARM64 🪟'
+            platform: 'windows'
           # MacOS
           - os: 'macos-latest'
             target: 'aarch64-apple-darwin'
             name: 'MacOS ARM64 🍏'
+            platform: 'macos'
           - os: 'macos-13'
             target: 'x86_64-apple-darwin'
             name: 'MacOS x86_64 🍏'
+            platform: 'macos'
           # Linux
           - os: 'ubuntu-latest'
             target: 'x86_64-unknown-linux-gnu'
             name: 'Linux 🐧'
+            platform: 'linux'
           # Android
           - os: 'ubuntu-latest'
             target: 'aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android'
             name: 'Android 🤖'
+            platform: 'android'
           # iOS
           - os: 'macos-latest'
             target: 'aarch64-apple-ios aarch64-apple-ios-sim'
             name: 'iOS 📱'
+            platform: 'ios'
           # Web
           - os: 'ubuntu-latest'
             target: ''
             name: 'Web 🌐'
+            platform: 'web'
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
@@ -92,11 +100,11 @@ jobs:
         if: ${{ matrix.name == 'Android 🤖'}}
         uses: android-actions/setup-android@v3
 
-      - name: Setup Perl for Windows 🛠️
-        uses: shogo82148/actions-setup-perl@v1
+      - name: Setup VCPKG Windows 🛠️
         if: ${{ matrix.os == 'windows-latest'}}
-        with:
-          perl-version: "latest"
+        run: |
+          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
+          vcpkg install openssl:x64-windows-static-md
 
       - name: Setup Dependencies & Configs 🛠️
         shell: bash
@@ -107,7 +115,7 @@ jobs:
             sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev curl wget file libxdo-dev libayatana-appindicator3-dev librsvg2-dev -y
           fi
 
-          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
+          if [[ ${{ matrix.platform }} == "android" ]]; then
             sdkmanager "ndk;$NDK_VERSION"
           fi
 
@@ -116,13 +124,12 @@ jobs:
 
       - name: Build & Deploy ${{ matrix.name }} 🚀
         run: |
-          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
-            export NDK_HOME="/usr/local/lib/android/ndk/$(ls -1 /usr/local/lib/android/ndk)"
+          if [[ ${{ matrix.platform }} == "android" ]]; then
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
-          elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
+          elif [[ ${{ matrix.platform }} == "ios" ]]; then
             cargo tauri ios init --ci
             cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
-          elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
+          elif [[ ${{ matrix.platform }} == "web" ]]; then
             trunk build --release --public-url "${GITHUB_REPOSITORY#*/}"
           else
             cargo tauri build --ci
