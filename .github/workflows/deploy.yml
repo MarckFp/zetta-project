@@ -91,6 +91,17 @@ jobs:
         if: ${{ matrix.name == 'Android 🤖'}}
         uses: android-actions/setup-android@v3
 
+      - name: Setup OpenSSL for Windows 🛠️
+        if: ${{ matrix.os == 'windows-latest'}}
+        shell: powershell
+        run: |
+          Invoke-WebRequest -Uri https://slproweb.com/download/Win64OpenSSL-3_1_2.exe -OutFile openssl-installer.exe
+          Start-Process -FilePath .\openssl-installer.exe -ArgumentList '/silent', '/sp-', '/suppressmsgboxes', '/verysilent', '/closeapplications' -NoNewWindow -Wait
+          $opensslPath = "C:\Program Files\OpenSSL-Win64"
+          echo "OPENSSL_DIR=$opensslPath" >> $env:GITHUB_ENV
+          echo "OPENSSL_LIB_DIR=$opensslPath\lib" >> $env:GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=$opensslPath\include" >> $env:GITHUB_ENV
+
       - name: Setup Dependencies & Configs 🛠️
         shell: bash
         run: |
@@ -110,9 +121,9 @@ jobs:
       - name: Build & Deploy ${{ matrix.name }} 🚀
         run: |
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
-            cargo tauri android build --ci --apk --aab --target ${{ matrix.target }}
+            cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
           elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
-            cargo tauri ios build --ci --target ${{ matrix.target }}
+            cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
           elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
             trunk build --release --public-url "${GITHUB_REPOSITORY#*/}"
           else
