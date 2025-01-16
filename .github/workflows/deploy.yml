@@ -6,6 +6,7 @@ on:
       - '*.*.*'
 
 env:
+  GH_TOKEN: ${{ github.token }}
   NDK_VERSION: "27.2.12479018"
   TAURI_VERSION: "^2.0.0"
 
@@ -93,14 +94,7 @@ jobs:
 
       - name: Setup OpenSSL for Windows 🛠️
         if: ${{ matrix.os == 'windows-latest'}}
-        shell: powershell
-        run: |
-          Invoke-WebRequest -Uri https://slproweb.com/download/Win64OpenSSL-3_1_2.exe -OutFile openssl-installer.exe
-          Start-Process -FilePath .\openssl-installer.exe -ArgumentList '/silent', '/sp-', '/suppressmsgboxes', '/verysilent', '/closeapplications' -NoNewWindow -Wait
-          $opensslPath = "C:\Program Files\OpenSSL-Win64"
-          echo "OPENSSL_DIR=$opensslPath" >> $env:GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=$opensslPath\lib" >> $env:GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=$opensslPath\include" >> $env:GITHUB_ENV
+        run: choco install openssl
 
       - name: Setup Dependencies & Configs 🛠️
         shell: bash
@@ -121,8 +115,10 @@ jobs:
       - name: Build & Deploy ${{ matrix.name }} 🚀
         run: |
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
+            export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
           elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
+            cargo tauri ios init --ci
             cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
           elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
             trunk build --release --public-url "${GITHUB_REPOSITORY#*/}"
@@ -154,9 +150,9 @@ jobs:
             gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}-.x86_64.rpm
             gh release upload ${{ github.ref_name }} target/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage
           elif [[ "${{ matrix.name }}" == "MacOS ARM64 🍏" ]]; then
-            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/macos/bundle/dmg/DxApp_${{ github.ref_name }}_aarch64.dmg
+            gh release upload ${{ github.ref_name }} target/release/bundle/dmg/zetta-project_${{ github.ref_name }}_aarch64.dmg
           elif [[ "${{ matrix.name }}" == "MacOS x86_64 🍏" ]]; then
-            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/macos/bundle/dmg/DxApp_${{ github.ref_name }}_x64.dmg
+            gh release upload ${{ github.ref_name }} target/release/bundle/dmg/zetta-project_${{ github.ref_name }}_x64.dmg
           elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
             zip -r ios.zip target/dx/dx-app/release/ios/DxApp.app
             gh release upload ${{ github.ref_name }} ios.zip
