@@ -29,11 +29,7 @@ jobs:
           # Windows
           - os: 'windows-latest'
             target: 'x86_64-pc-windows-msvc'
-            name: 'Windows x86_64 🪟'
-            platform: 'windows'
-          - os: 'windows-latest'
-            target: 'aarch64-pc-windows-msvc'
-            name: 'Windows ARM64 🪟'
+            name: 'Windows 🪟'
             platform: 'windows'
           # MacOS
           - os: 'macos-latest'
@@ -126,11 +122,7 @@ jobs:
         shell: bash
         run: |
           if [[ ${{ matrix.platform }} == "android" ]]; then
-            echo "ndk:"$NDK_HOME
-            echo "android home:"$ANDROID_HOME
-            echo "sdk root:"$ANDROID_SDK_ROOT
-            ls -l $ANDROID_SDK_ROOT
-            ls -l $ANDROID_SDK_ROOT/sdk
+            ls -l $ANDROID_SDK_ROOT/ndk
             export NDK_HOME="$ANDROID_SDK_ROOT/ndk/$(ls -1 $ANDROID_SDK_ROOT/ndk)"
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
           elif [[ ${{ matrix.platform }} == "ios" ]]; then
@@ -157,10 +149,9 @@ jobs:
         if: ${{ matrix.name != 'Web 🌐'}}
         shell: bash
         run: |
-          if [[ "${{ matrix.name }}" == "Windows x86_64 🪟" ]]; then
-            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/windows/bundle/dx-app.exe
-          elif [[ "${{ matrix.name }}" == "Windows ARM64 🪟" ]]; then
-            gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/windows/bundle/dx-app.exe
+          if [[ "${{ matrix.name }}" == "Windows 🪟" ]]; then
+            gh release upload ${{ github.ref_name }} target/release/bundle/msi/zetta-project_${{ github.ref_name }}_x64_en-US.msi
+            gh release upload ${{ github.ref_name }} target/release/bundle/nsis/zetta-project_${{ github.ref_name }}_x64-setup.exe
           elif [[ "${{ matrix.name }}" == "Linux 🐧" ]]; then
             gh release upload ${{ github.ref_name }} target/release/bundle/deb/zetta-project_${{ github.ref_name }}_amd64.deb
             gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}-1.x86_64.rpm
