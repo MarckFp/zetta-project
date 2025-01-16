@@ -53,7 +53,7 @@ jobs:
             name: 'iOS 📱'
           # Web
           - os: 'ubuntu-latest'
-            target: 'wasm32-unknown-unknown'
+            target: ''
             name: 'Web 🌐'
     steps:
       - name: Checkout 🛎️
@@ -78,7 +78,7 @@ jobs:
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.toml.orig >src-tauri/Cargo.toml
 
       - name: Setup Rust Targets 🦀
-        run: rustup target add ${{ matrix.target }}
+        run: rustup target add wasm32-unknown-unknown ${{ matrix.target }}
 
       - name: Setup Java ☕
         if: ${{ matrix.name == 'Android 🤖'}}
