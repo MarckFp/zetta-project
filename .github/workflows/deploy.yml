@@ -122,8 +122,7 @@ jobs:
         shell: bash
         run: |
           if [[ ${{ matrix.platform }} == "android" ]]; then
-            ls -l $ANDROID_SDK_ROOT/ndk
-            export NDK_HOME="$ANDROID_SDK_ROOT/ndk/$(ls -1 $ANDROID_SDK_ROOT/ndk)"
+            export NDK_HOME="$ANDROID_SDK_ROOT/ndk/$NDK_VERSION"
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
           elif [[ ${{ matrix.platform }} == "ios" ]]; then
             cargo tauri ios init --ci
