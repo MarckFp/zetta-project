@@ -123,8 +123,15 @@ jobs:
           cargo install tauri-cli --version $TAURI_VERSION --locked
 
       - name: Build & Deploy ${{ matrix.name }} 🚀
+        shell: bash
         run: |
           if [[ ${{ matrix.platform }} == "android" ]]; then
+            echo "ndk:"$NDK_HOME
+            echo "android home:"$ANDROID_HOME
+            echo "sdk root:"$ANDROID_SDK_ROOT
+            ls -l $ANDROID_SDK_ROOT
+            ls -l $ANDROID_SDK_ROOT/sdk
+            export NDK_HOME="$ANDROID_SDK_ROOT/ndk/$(ls -1 $ANDROID_SDK_ROOT/ndk)"
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
           elif [[ ${{ matrix.platform }} == "ios" ]]; then
             cargo tauri ios init --ci
@@ -156,7 +163,7 @@ jobs:
             gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/windows/bundle/dx-app.exe
           elif [[ "${{ matrix.name }}" == "Linux 🐧" ]]; then
             gh release upload ${{ github.ref_name }} target/release/bundle/deb/zetta-project_${{ github.ref_name }}_amd64.deb
-            gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}.x86_64.rpm
+            gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}-1.x86_64.rpm
             gh release upload ${{ github.ref_name }} target/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage
           elif [[ "${{ matrix.name }}" == "MacOS ARM64 🍏" ]]; then
             gh release upload ${{ github.ref_name }} target/release/bundle/dmg/zetta-project_${{ github.ref_name }}_aarch64.dmg
