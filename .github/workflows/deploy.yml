@@ -92,9 +92,11 @@ jobs:
         if: ${{ matrix.name == 'Android 🤖'}}
         uses: android-actions/setup-android@v3
 
-      - name: Setup OpenSSL for Windows 🛠️
+      - name: Setup Perl for Windows 🛠️
+        uses: shogo82148/actions-setup-perl@v1
         if: ${{ matrix.os == 'windows-latest'}}
-        run: choco install openssl
+        with:
+          perl-version: "latest"
 
       - name: Setup Dependencies & Configs 🛠️
         shell: bash
@@ -115,7 +117,7 @@ jobs:
       - name: Build & Deploy ${{ matrix.name }} 🚀
         run: |
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
-            export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
+            export NDK_HOME="/usr/local/lib/android/ndk/$(ls -1 /usr/local/lib/android/ndk)"
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
           elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
             cargo tauri ios init --ci
@@ -147,7 +149,7 @@ jobs:
             gh release upload ${{ github.ref_name }} target/dx/dx-app/bundle/windows/bundle/dx-app.exe
           elif [[ "${{ matrix.name }}" == "Linux 🐧" ]]; then
             gh release upload ${{ github.ref_name }} target/release/bundle/deb/zetta-project_${{ github.ref_name }}_amd64.deb
-            gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}-.x86_64.rpm
+            gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}.x86_64.rpm
             gh release upload ${{ github.ref_name }} target/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage
           elif [[ "${{ matrix.name }}" == "MacOS ARM64 🍏" ]]; then
             gh release upload ${{ github.ref_name }} target/release/bundle/dmg/zetta-project_${{ github.ref_name }}_aarch64.dmg
