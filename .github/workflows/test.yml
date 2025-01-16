@@ -1,0 +1,30 @@
+name: 'Test 🧪'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: "-Dwarnings"
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Cache Rust 🦀
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-cargo-
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Setup Dependencies & Configs 🛠️
+        shell: bash
+        run: sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev curl wget file libxdo-dev libayatana-appindicator3-dev librsvg2-dev -y
+
+      - name: Run Clippy 🧹
+        run: cargo clippy --all-targets --all-features
