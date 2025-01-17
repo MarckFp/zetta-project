@@ -84,7 +84,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
-          java-version: '21'
+          java-version: '17'
 
       - name: Setup Android 🤖
         if: ${{ matrix.name == 'Android 🤖'}}
@@ -105,7 +105,7 @@ jobs:
 
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
             sdkmanager "ndk;$NDK_VERSION"
-            export NDK_HOME="$ANDROID_SDK_ROOT/ndk/$NDK_VERSION"
+            echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
           fi
 
           cargo install trunk --locked
