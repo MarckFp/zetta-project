@@ -9,6 +9,8 @@ env:
   GH_TOKEN: ${{ github.token }}
   NDK_VERSION: "27.2.12479018"
   TAURI_VERSION: "^2.0.0"
+  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.APP_SIGN_KEY }}
+  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.APP_SIGN_PASSWORD }}
 
 jobs:
   deploy:
@@ -141,8 +143,6 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      
-
       - name: Upload Artifacts 📦
         if: ${{ matrix.name != 'Web 🌐'}}
         shell: bash
@@ -167,3 +167,38 @@ jobs:
             gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk \
               src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
           fi
+  updater:
+    name: Upater 🔄
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - run: |
+          mkdir binaries
+          cd binaries
+          gh release download ${{ github.ref_name }}
+
+          cat <<EOF > updater.json
+          {
+            "version": "${{ github.ref_name }}",
+            "pub_date": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "platforms": {
+              "linux-x86_64": {
+                "signature": "$(cat zetta-project_${{ github.ref_name }}_amd64.AppImage.sig)",
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_amd64.AppImage"
+              },
+              "windows-x86_64": {
+                "signature": "$(cat zetta-project_${{ github.ref_name }}_x64-setup.exe.sig)",
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_x64-setup.exe"
+              },
+              "darwin-x86_64": {
+                "signature": "$(cat zetta-project_${{ github.ref_name }}_x64.dmg.sig)",
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_x64.dmg"
+              },
+              "darwin-aarch64": {
+                "signature": "$(cat zetta-project_${{ github.ref_name }}_aarch64.dmg.sig)",
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_aarch64.dmg"
+              }
+            }
+          }
+          EOF
