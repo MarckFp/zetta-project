@@ -30,36 +30,29 @@ jobs:
           - os: 'windows-latest'
             target: 'x86_64-pc-windows-msvc'
             name: 'Windows 🪟'
-            platform: 'windows'
           # MacOS
           - os: 'macos-latest'
             target: 'aarch64-apple-darwin'
             name: 'MacOS ARM64 🍏'
-            platform: 'macos'
           - os: 'macos-13'
             target: 'x86_64-apple-darwin'
             name: 'MacOS x86_64 🍏'
-            platform: 'macos'
           # Linux
           - os: 'ubuntu-latest'
             target: 'x86_64-unknown-linux-gnu'
             name: 'Linux 🐧'
-            platform: 'linux'
           # Android
           - os: 'ubuntu-latest'
             target: 'aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android'
             name: 'Android 🤖'
-            platform: 'android'
           # iOS
           - os: 'macos-latest'
             target: 'aarch64-apple-ios aarch64-apple-ios-sim'
             name: 'iOS 📱'
-            platform: 'ios'
           # Web
           - os: 'ubuntu-latest'
             target: ''
             name: 'Web 🌐'
-            platform: 'web'
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
@@ -70,6 +63,7 @@ jobs:
           path: ~/.cargo
           key: ${{ runner.os }}-cargo-${{ matrix.target }}
           restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.target }}-
             ${{ runner.os }}-cargo-
 
       - name: Set Cargo version 📦
@@ -105,14 +99,13 @@ jobs:
       - name: Setup Dependencies & Configs 🛠️
         shell: bash
         run: |
-          if [[ ${{ matrix.os }} == "macos-latest" ]]; then
-            brew install openssl
-          elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
             sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev build-essential libssl-dev curl wget file libxdo-dev libayatana-appindicator3-dev librsvg2-dev -y
           fi
 
-          if [[ ${{ matrix.platform }} == "android" ]]; then
+          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
             sdkmanager "ndk;$NDK_VERSION"
+            export NDK_HOME="$ANDROID_SDK_ROOT/ndk/$NDK_VERSION"
           fi
 
           cargo install trunk --locked
@@ -121,13 +114,12 @@ jobs:
       - name: Build & Deploy ${{ matrix.name }} 🚀
         shell: bash
         run: |
-          if [[ ${{ matrix.platform }} == "android" ]]; then
-            export NDK_HOME="$ANDROID_SDK_ROOT/ndk/$NDK_VERSION"
+          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
-          elif [[ ${{ matrix.platform }} == "ios" ]]; then
+          elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
             cargo tauri ios init --ci
             cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
-          elif [[ ${{ matrix.platform }} == "web" ]]; then
+          elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
             trunk build --release --public-url "${GITHUB_REPOSITORY#*/}"
           else
             cargo tauri build --ci
@@ -149,12 +141,12 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ matrix.name }}" == "Windows 🪟" ]]; then
-            gh release upload ${{ github.ref_name }} target/release/bundle/msi/zetta-project_${{ github.ref_name }}_x64_en-US.msi
-            gh release upload ${{ github.ref_name }} target/release/bundle/nsis/zetta-project_${{ github.ref_name }}_x64-setup.exe
+            gh release upload ${{ github.ref_name }} target/release/bundle/msi/zetta-project_${{ github.ref_name }}_x64_en-US.msi \
+              target/release/bundle/nsis/zetta-project_${{ github.ref_name }}_x64-setup.exe
           elif [[ "${{ matrix.name }}" == "Linux 🐧" ]]; then
-            gh release upload ${{ github.ref_name }} target/release/bundle/deb/zetta-project_${{ github.ref_name }}_amd64.deb
-            gh release upload ${{ github.ref_name }} target/release/bundle/rpm/zetta-project-${{ github.ref_name }}-1.x86_64.rpm
-            gh release upload ${{ github.ref_name }} target/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage
+            gh release upload ${{ github.ref_name }} target/release/bundle/deb/zetta-project_${{ github.ref_name }}_amd64.deb \
+              target/release/bundle/rpm/zetta-project-${{ github.ref_name }}-1.x86_64.rpm \
+              target/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage
           elif [[ "${{ matrix.name }}" == "MacOS ARM64 🍏" ]]; then
             gh release upload ${{ github.ref_name }} target/release/bundle/dmg/zetta-project_${{ github.ref_name }}_aarch64.dmg
           elif [[ "${{ matrix.name }}" == "MacOS x86_64 🍏" ]]; then
@@ -163,8 +155,8 @@ jobs:
             zip -r ios.zip target/dx/dx-app/release/ios/DxApp.app
             gh release upload ${{ github.ref_name }} ios.zip
           elif [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
-            mv /src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk /src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk
+            mv src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk /src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk
             mv src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
-            gh release upload ${{ github.ref_name }} /src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk
-            gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
+            gh release upload ${{ github.ref_name }} /src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk \
+              src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
           fi
