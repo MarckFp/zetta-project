@@ -212,6 +212,9 @@ jobs:
     environment:
       name: production
     steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
       - run: |
           cat <<EOF > updater.json
           {
