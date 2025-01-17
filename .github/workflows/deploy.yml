@@ -209,6 +209,9 @@ jobs:
     name: Updater 🔄
     runs-on: ubuntu-latest
     needs: deploy
+    permissions:
+      contents: write
+      discussions: write
     environment:
       name: production
     steps:
