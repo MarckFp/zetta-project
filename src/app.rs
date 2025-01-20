@@ -9,6 +9,7 @@ async fn greet(name: &str) -> String {
 pub fn App() -> impl IntoView {
     let (name, set_name) = signal(String::new());
     let (greet_msg, set_greet_msg) = signal(String::new());
+    const VERSION: &str = env!("CARGO_PKG_VERSION");
 
     let update_name = move |ev| {
         let v = event_target_value(&ev);
@@ -30,7 +31,7 @@ pub fn App() -> impl IntoView {
 
     view! {
         <main class="container">
-            <h1>"Welcome to Tauri + Leptos"</h1>
+            <h1>{format!("Welcome Zetta Project v{}", VERSION)}</h1>
 
             <div class="row">
                 <a href="https://tauri.app" target="_blank">
