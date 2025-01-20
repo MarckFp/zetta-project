@@ -1,19 +1,27 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Zetta Project",
+    "short_name": "Z Project",
+    "description": "Zetta Project is a testing cross-platform app",
+    "start_url": "/",
+    "id": "/",
+    "scope": "/",
+    "dir": "ltr",
+    "lang": "en",
+    "orientation": "portrait",
     "icons": [
         {
-            "src": "/android-chrome-192x192.png",
+            "src": "icons/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/android-chrome-512x512.png",
+            "src": "icons/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
         }
     ],
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
-    "display": "standalone"
+    "display": "standalone",
+    "display_override": ["window-control-overlay", "standalone"]
 }

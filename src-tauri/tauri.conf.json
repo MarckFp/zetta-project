@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "zetta-project",
+  "productName": "Zetta Project",
   "identifier": "com.zetta-project.app",
   "build": {
     "beforeDevCommand": "trunk serve",
