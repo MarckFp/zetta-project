@@ -1,17 +1,8 @@
 use leptos::task::spawn_local;
 use leptos::{ev::SubmitEvent, prelude::*};
-use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = ["window", "__TAURI__", "core"])]
-    async fn invoke(cmd: &str, args: JsValue) -> JsValue;
-}
-
-#[derive(Serialize, Deserialize)]
-struct GreetArgs<'a> {
-    name: &'a str,
+async fn greet(name: &str) -> String {
+    format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[component]
@@ -32,9 +23,7 @@ pub fn App() -> impl IntoView {
                 return;
             }
 
-            let args = serde_wasm_bindgen::to_value(&GreetArgs { name: &name }).unwrap();
-            // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-            let new_msg = invoke("greet", args).await.as_string().unwrap();
+            let new_msg = greet(&name).await;
             set_greet_msg.set(new_msg);
         });
     };
