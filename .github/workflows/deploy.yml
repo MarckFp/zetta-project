@@ -163,43 +163,43 @@ jobs:
         shell: bash
         run: |
           if [[ "${{ matrix.name }}" == "Windows x86_64 🪟" ]]; then
-            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/msi/zetta-project_${{ github.ref_name }}_x64_en-US.msi \
-              target/${{ matrix.target }}/release/bundle/nsis/zetta-project_${{ github.ref_name }}_x64-setup.exe
+            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi \
+              target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe
             
-            echo "MSI_SIG=$(cat target/${{ matrix.target }}/release/bundle/msi/zetta-project_${{ github.ref_name }}_x64_en-US.msi.sig)" >> $GITHUB_ENV
-            echo "EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/zetta-project_${{ github.ref_name }}_x64-setup.exe.sig)" >> $GITHUB_ENV
+            echo "MSI_SIG=$(cat target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi.sig)" >> $GITHUB_ENV
+            echo "EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe.sig)" >> $GITHUB_ENV
 
           elif [[ "${{ matrix.name }}" == "Linux x86_64 🐧" ]]; then
-            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/deb/zetta-project_${{ github.ref_name }}_amd64.deb \
-              target/${{ matrix.target }}/release/bundle/rpm/zetta-project-${{ github.ref_name }}-1.x86_64.rpm \
-              target/${{ matrix.target }}/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage
+            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/deb/Zetta\ Project_${{ github.ref_name }}_amd64.deb \
+              target/${{ matrix.target }}/release/bundle/rpm/Zetta\ Project-${{ github.ref_name }}-1.x86_64.rpm \
+              target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage
 
-            echo "APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/zetta-project_${{ github.ref_name }}_amd64.AppImage.sig)" >> $GITHUB_ENV
+            echo "APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage.sig)" >> $GITHUB_ENV
 
           elif [[ "${{ matrix.name }}" == "MacOS ARM64 🍏" ]]; then
-            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_aarch64.app.tar.gz
-            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz.sig target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_aarch64.app.tar.gz.sig
-            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/dmg/zetta-project_${{ github.ref_name }}_aarch64.dmg \
-              target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_aarch64.app.tar.gz
+            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_aarch64.app.tar.gz
+            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz.sig target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_aarch64.app.tar.gz.sig
+            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/dmg/Zetta\ Project_${{ github.ref_name }}_aarch64.dmg \
+              target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_aarch64.app.tar.gz
 
-            echo "ARM64_APP_SIG=$(cat target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_aarch64.app.tar.gz.sig)" >> $GITHUB_ENV
+            echo "ARM64_APP_SIG=$(cat target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_aarch64.app.tar.gz.sig)" >> $GITHUB_ENV
 
           elif [[ "${{ matrix.name }}" == "MacOS x86_64 🍏" ]]; then
-            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_x64.app.tar.gz
-            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz.sig target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_x64.app.tar.gz.sig
-            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/dmg/zetta-project_${{ github.ref_name }}_x64.dmg \
-              target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_x64.app.tar.gz
+            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz
+            mv target/${{ matrix.target }}/release/bundle/macos/zetta-project.app.tar.gz.sig target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz.sig
+            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/dmg/Zetta\ Project_${{ github.ref_name }}_x64.dmg \
+              target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz
 
-            echo "x86_64_APP_SIG=$(cat target/${{ matrix.target }}/release/bundle/macos/zetta-project_${{ github.ref_name }}_x64.app.tar.gz.sig)" >> $GITHUB_ENV
+            echo "x86_64_APP_SIG=$(cat target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz.sig)" >> $GITHUB_ENV
 
           elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
             echo "Not ready yet"
 
           elif [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
-            mv src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk
-            mv src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
-            gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/apk/universal/release/zetta-project_${{ github.ref_name }}.apk \
-              src-tauri/gen/android/app/build/outputs/bundle/universalRelease/zetta-project_${{ github.ref_name }}.aab
+            mv src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk src-tauri/gen/android/app/build/outputs/apk/universal/release/Zetta\ Project_${{ github.ref_name }}.apk
+            mv src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab src-tauri/gen/android/app/build/outputs/bundle/universalRelease/Zetta\ Project_${{ github.ref_name }}.aab
+            gh release upload ${{ github.ref_name }} src-tauri/gen/android/app/build/outputs/apk/universal/release/Zetta\ Project_${{ github.ref_name }}.apk \
+              src-tauri/gen/android/app/build/outputs/bundle/universalRelease/Zetta\ Project_${{ github.ref_name }}.aab
           fi
   updater:
     name: Updater 🔄
@@ -222,19 +222,19 @@ jobs:
             "platforms": {
               "linux-x86_64": {
                 "signature": "${APPIMAGE_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_amd64.AppImage"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_amd64.AppImage"
               },
               "windows-x86_64": {
                 "signature": "${MSI_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_x64_en-US.msi"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_x64_en-US.msi"
               },
               "darwin-x86_64": {
                 "signature": "${x86_64_APP_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_x64.app.tar.gz"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_x64.app.tar.gz"
               },
               "darwin-aarch64": {
                 "signature": "${ARM64_APP_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/zetta-project_${{ github.ref_name }}_aarch64.app.tar.gz"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_aarch64.app.tar.gz"
               }
             }
           }
