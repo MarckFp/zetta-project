@@ -115,8 +115,9 @@ jobs:
             echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
           fi
 
-          cargo install trunk --locked
-          cargo install tauri-cli --version $TAURI_VERSION --locked
+          cargo install cargo-binstall
+          cargo binstall trunk -y --locked
+          cargo binstall tauri-cli -y --version $TAURI_VERSION --locked
 
       - name: Setup Rust Targets 🦀
         run: rustup target add wasm32-unknown-unknown ${{ matrix.target }}
