@@ -68,7 +68,7 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
 
-      - name: Set Cargo version 📦
+      - name: Set Version 📦
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref_name }}
@@ -77,6 +77,8 @@ jobs:
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
           mv src-tauri/Cargo.toml src-tauri/Cargo.toml.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.toml.orig >src-tauri/Cargo.toml
+          mv src-tauri/tauri.conf.json src-tauri/tauri.conf.json.orig
+          sed "s/\"version\": \"0\\.0\\.0-git\"/\"version\": \"${RELEASE_TAG##*\/v}\"/" src-tauri/tauri.conf.json.orig >src-tauri/tauri.conf.json
 
       - name: Setup Rust Targets 🦀
         run: rustup target add wasm32-unknown-unknown ${{ matrix.target }}
