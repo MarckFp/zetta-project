@@ -102,6 +102,9 @@ jobs:
           echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
           vcpkg install openssl:x64-windows-static-md
 
+      - name: Install Cargo Binstall 🛠️
+        uses: cargo-bins/cargo-binstall@main
+
       - name: Setup Dependencies & Configs 🛠️
         shell: bash
         run: |
@@ -115,7 +118,6 @@ jobs:
             echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
           fi
 
-          cargo install cargo-binstall
           cargo binstall trunk -y --locked
           cargo binstall tauri-cli -y --version $TAURI_VERSION --locked
 
