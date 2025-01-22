@@ -119,7 +119,7 @@ jobs:
           fi
 
           cargo binstall trunk -y --locked
-          cargo binstall tauri-cli -y --version $TAURI_VERSION --locked
+          cargo install tauri-cli --version $TAURI_VERSION --locked
 
       - name: Setup Rust Targets 🦀
         run: rustup target add wasm32-unknown-unknown ${{ matrix.target }}
