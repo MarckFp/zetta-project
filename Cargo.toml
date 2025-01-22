@@ -16,6 +16,7 @@ console_error_panic_hook = "0.1.7"
 members = ["src-tauri"]
 
 [profile.release]
+incremental = true
 opt-level = 'z'
 lto = true
 codegen-units = 1
