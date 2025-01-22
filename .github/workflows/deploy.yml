@@ -84,6 +84,17 @@ jobs:
           mv src-tauri/tauri.conf.json src-tauri/tauri.conf.json.orig
           sed "s/\"version\": \"0\\.0\\.0-git\"/\"version\": \"${RELEASE_TAG##*\/v}\"/" src-tauri/tauri.conf.json.orig >src-tauri/tauri.conf.json
 
+      - name: Setup Java ☕
+        if: ${{ matrix.name == 'Android 🤖'}}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+
+      - name: Setup Android 🤖
+        if: ${{ matrix.name == 'Android 🤖'}}
+        uses: android-actions/setup-android@v3
+
       - name: Setup VCPKG Windows 🛠️
         if: ${{ matrix.os == 'windows-latest'}}
         run: |
@@ -113,17 +124,6 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-
-      - name: Setup Java ☕
-        if: ${{ matrix.name == 'Android 🤖'}}
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'corretto'
-          java-version: '17'
-
-      - name: Setup Android 🤖
-        if: ${{ matrix.name == 'Android 🤖'}}
-        uses: android-actions/setup-android@v3
 
       - name: Android Sign
         if: ${{ matrix.name == 'Android 🤖'}}
