@@ -57,7 +57,7 @@ jobs:
             target: 'aarch64-unknown-linux-gnu'
             name: 'Linux ARM64 🐧'
           # Android
-          - os: 'macos-15'
+          - os: 'ubuntu-24.04'
             target: 'aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android'
             name: 'Android 🤖'
           # iOS
@@ -222,7 +222,7 @@ jobs:
           fi
   updater:
     name: Updater 🔄
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     needs: [deploy]
     permissions:
       contents: write
