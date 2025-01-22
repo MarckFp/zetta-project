@@ -49,15 +49,14 @@ jobs:
             target: 'x86_64-apple-darwin'
             name: 'MacOS x86_64 🍏'
           # Linux
-          - os: 'ubuntu-latest'
+          - os: 'ubuntu-24.04'
             target: 'x86_64-unknown-linux-gnu'
             name: 'Linux x86_64 🐧'
-            # TODO: Not ready yet rust not installed by default
-#          - os: 'ubuntu-24.04-arm'
-#            target: 'aarch64-unknown-linux-gnu'
-#            name: 'Linux ARM64 🐧'
+          - os: 'ubuntu-24.04-arm'
+            target: 'aarch64-unknown-linux-gnu'
+            name: 'Linux ARM64 🐧'
           # Android
-          - os: 'ubuntu-latest'
+          - os: 'ubuntu-24.04'
             target: 'aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android'
             name: 'Android 🤖'
           # iOS
@@ -85,6 +84,28 @@ jobs:
           mv src-tauri/tauri.conf.json src-tauri/tauri.conf.json.orig
           sed "s/\"version\": \"0\\.0\\.0-git\"/\"version\": \"${RELEASE_TAG##*\/v}\"/" src-tauri/tauri.conf.json.orig >src-tauri/tauri.conf.json
 
+      - name: Setup VCPKG Windows 🛠️
+        if: ${{ matrix.os == 'windows-latest'}}
+        run: |
+          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
+          vcpkg install openssl:x64-windows-static-md
+
+      - name: Setup Dependencies & Configs 🛠️
+        shell: bash
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-24.04"  ] || [ "${{ matrix.os }}" == "ubuntu-24.04-arm"  ]]; then
+            sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf -y
+            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+          fi
+
+          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
+            sdkmanager "ndk;$NDK_VERSION"
+            echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
+          fi
+
+          cargo install trunk --locked
+          cargo install tauri-cli --version $TAURI_VERSION --locked
+
       - name: Setup Rust Targets 🦀
         run: rustup target add wasm32-unknown-unknown ${{ matrix.target }}
       
@@ -103,27 +124,6 @@ jobs:
       - name: Setup Android 🤖
         if: ${{ matrix.name == 'Android 🤖'}}
         uses: android-actions/setup-android@v3
-
-      - name: Setup VCPKG Windows 🛠️
-        if: ${{ matrix.os == 'windows-latest'}}
-        run: |
-          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
-          vcpkg install openssl:x64-windows-static-md
-
-      - name: Setup Dependencies & Configs 🛠️
-        shell: bash
-        run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf -y
-          fi
-
-          if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
-            sdkmanager "ndk;$NDK_VERSION"
-            echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
-          fi
-
-          cargo install trunk --locked
-          cargo install tauri-cli --version $TAURI_VERSION --locked
 
       - name: Android Sign
         if: ${{ matrix.name == 'Android 🤖'}}
