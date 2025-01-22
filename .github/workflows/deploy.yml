@@ -224,19 +224,19 @@ jobs:
             "platforms": {
               "linux-x86_64": {
                 "signature": "${APPIMAGE_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_amd64.AppImage"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_amd64.AppImage"
               },
               "windows-x86_64": {
                 "signature": "${MSI_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_x64_en-US.msi"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64_en-US.msi"
               },
               "darwin-x86_64": {
                 "signature": "${x86_64_APP_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_x64.app.tar.gz"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64.app.tar.gz"
               },
               "darwin-aarch64": {
                 "signature": "${ARM64_APP_SIG}",
-                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta%20Project_${{ github.ref_name }}_aarch64.app.tar.gz"
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_aarch64.app.tar.gz"
               }
             }
           }
