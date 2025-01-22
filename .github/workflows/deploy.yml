@@ -73,7 +73,7 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
 
-      - name: Set Version 📦
+      - name: Set Version 📝
         shell: bash
         env:
           RELEASE_TAG: ${{ github.ref_name }}
@@ -123,13 +123,8 @@ jobs:
 
       - name: Setup Rust Targets 🦀
         run: rustup target add wasm32-unknown-unknown ${{ matrix.target }}
-      
-      - name: Rust cache 🦀
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
 
-      - name: Android Sign
+      - name: Android Sign 🔐
         if: ${{ matrix.name == 'Android 🤖'}}
         run: |
           cd src-tauri/gen/android
@@ -152,13 +147,13 @@ jobs:
             cargo tauri build --ci --target ${{ matrix.target }}
           fi
 
-      - name: Setup Github Pages 📄
+      - name: Setup Github Pages ⚙️
         if: ${{ matrix.name == 'Web 🌐'}}
         uses: actions/configure-pages@v5
         with:
           enablement: true
 
-      - name: Upload Github Pages 📦
+      - name: Upload Github Pages 📤
         if: ${{ matrix.name == 'Web 🌐'}}
         uses: actions/upload-pages-artifact@v3
         with:
