@@ -38,10 +38,9 @@ jobs:
           - os: 'windows-2025'
             target: 'x86_64-pc-windows-msvc'
             name: 'Windows x86_64 🪟'
-            # TODO: Not ready yet Windows ARM64 Runners
-#          - os: 'windows-2025'
-#            target: 'aarch64-pc-windows-msvc'
-#            name: 'Windows ARM64 🪟'
+          - os: 'windows-11-preview_aarch64'
+            target: 'aarch64-pc-windows-msvc'
+            name: 'Windows ARM64 🪟'
           # MacOS
           - os: 'macos-15'
             target: 'aarch64-apple-darwin'
