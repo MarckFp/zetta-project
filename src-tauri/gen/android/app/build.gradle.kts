@@ -14,6 +14,16 @@ val tauriProperties = Properties().apply {
     }
 }
 
+val cargoProperties = Properties().apply {
+    val cargoToml = file("../../../Cargo.toml")
+    cargoToml.forEachLine { line ->
+        val (key, value) = line.split("=").map { it.trim() }
+        if (key == "version") {
+            setProperty("tauri.android.versionName", value.replace("\"", ""))
+        }
+    }
+}
+
 android {
     compileSdk = 34
     namespace = "com.zetta_project.app"
