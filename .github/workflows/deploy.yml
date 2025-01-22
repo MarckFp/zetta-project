@@ -57,7 +57,7 @@ jobs:
             target: 'aarch64-unknown-linux-gnu'
             name: 'Linux ARM64 🐧'
           # Android
-          - os: 'ubuntu-24.04'
+          - os: 'macos-15'
             target: 'aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android'
             name: 'Android 🤖'
           # iOS
@@ -66,7 +66,7 @@ jobs:
 #            target: 'aarch64-apple-ios aarch64-apple-ios-sim'
 #            name: 'iOS 📱'
           # Web
-          - os: 'ubuntu-24.04'
+          - os: 'macos-15'
             target: ''
             name: 'Web 🌐'
     steps:
