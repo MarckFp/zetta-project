@@ -25,7 +25,8 @@ jobs:
       contents: write
       discussions: write
     outputs:
-      APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.APPIMAGE_SIG }}
+      x86_64_APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.x86_64_APPIMAGE_SIG }}
+      ARM64_APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.ARM64_APPIMAGE_SIG }}
       MSI_SIG: ${{ steps.gen_artifacts.outputs.MSI_SIG }}
       x86_64_APP_SIG: ${{ steps.gen_artifacts.outputs.x86_64_APP_SIG }}
       ARM64_APP_SIG: ${{ steps.gen_artifacts.outputs.ARM64_APP_SIG }}
@@ -65,7 +66,7 @@ jobs:
 #            target: 'aarch64-apple-ios aarch64-apple-ios-sim'
 #            name: 'iOS 📱'
           # Web
-          - os: 'ubuntu-latest'
+          - os: 'ubuntu-24.04'
             target: ''
             name: 'Web 🌐'
     steps:
@@ -182,7 +183,14 @@ jobs:
               target/${{ matrix.target }}/release/bundle/rpm/Zetta\ Project-${{ github.ref_name }}-1.x86_64.rpm \
               target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage
 
-            echo "APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage.sig)" >> $GITHUB_OUTPUT
+            echo "x86_64_APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage.sig)" >> $GITHUB_OUTPUT
+
+          elif [[ "${{ matrix.name }}" == "Linux ARM64 🐧" ]]; then
+            gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/deb/Zetta\ Project_${{ github.ref_name }}_arm64.deb \
+              target/${{ matrix.target }}/release/bundle/rpm/Zetta\ Project-${{ github.ref_name }}-1.aarch64.rpm \
+              target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_aarch64.AppImage
+
+            echo "ARM64_APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_aarch64.AppImage.sig)" >> $GITHUB_OUTPUT
 
           elif [[ "${{ matrix.name }}" == "MacOS ARM64 🍏" ]]; then
             mv target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project.app.tar.gz target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_aarch64.app.tar.gz
@@ -211,7 +219,7 @@ jobs:
           fi
   updater:
     name: Updater 🔄
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [deploy]
     permissions:
       contents: write
@@ -224,7 +232,8 @@ jobs:
 
       - name: Generate updater 🔄
         env:
-          APPIMAGE_SIG: ${{ needs.deploy.outputs.APPIMAGE_SIG }}
+          x86_64_APPIMAGE_SIG: ${{ needs.deploy.outputs.x86_64_APPIMAGE_SIG }}
+          ARM64_APPIMAGE_SIG: ${{ needs.deploy.outputs.ARM64_APPIMAGE_SIG }}
           MSI_SIG: ${{ needs.deploy.outputs.MSI_SIG }}
           x86_64_APP_SIG: ${{ needs.deploy.outputs.x86_64_APP_SIG }}
           ARM64_APP_SIG: ${{ needs.deploy.outputs.ARM64_APP_SIG }}
@@ -235,8 +244,12 @@ jobs:
             "pub_date": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
             "platforms": {
               "linux-x86_64": {
-                "signature": "${APPIMAGE_SIG}",
+                "signature": "${x86_64_APPIMAGE_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_amd64.AppImage"
+              },
+              "linux-aarch64": {
+                "signature": "${ARM64_APPIMAGE_SIG}",
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_aarch64.AppImage"
               },
               "windows-x86_64": {
                 "signature": "${MSI_SIG}",
