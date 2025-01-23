@@ -27,7 +27,8 @@ jobs:
     outputs:
       x86_64_APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.x86_64_APPIMAGE_SIG }}
       ARM64_APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.ARM64_APPIMAGE_SIG }}
-      MSI_SIG: ${{ steps.gen_artifacts.outputs.MSI_SIG }}
+      x86_64_MSI_SIG: ${{ steps.gen_artifacts.outputs.x86_64_MSI_SIG }}
+      x86_64_EXE_SIG: ${{ steps.gen_artifacts.outputs.x86_64_EXE_SIG }}
       x86_64_APP_SIG: ${{ steps.gen_artifacts.outputs.x86_64_APP_SIG }}
       ARM64_APP_SIG: ${{ steps.gen_artifacts.outputs.ARM64_APP_SIG }}
     strategy:
@@ -173,8 +174,8 @@ jobs:
             gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi \
               target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe
             
-            echo "MSI_SIG=$(cat target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi.sig)" >> $GITHUB_OUTPUT
-            echo "EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe.sig)" >> $GITHUB_OUTPUT
+            echo "x86_64_MSI_SIG=$(cat target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi.sig)" >> $GITHUB_OUTPUT
+            echo "x86_64_EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe.sig)" >> $GITHUB_OUTPUT
 
           elif [[ "${{ matrix.name }}" == "Linux x86_64 🐧" ]]; then
             gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/deb/Zetta\ Project_${{ github.ref_name }}_amd64.deb \
@@ -232,7 +233,7 @@ jobs:
         env:
           x86_64_APPIMAGE_SIG: ${{ needs.deploy.outputs.x86_64_APPIMAGE_SIG }}
           ARM64_APPIMAGE_SIG: ${{ needs.deploy.outputs.ARM64_APPIMAGE_SIG }}
-          MSI_SIG: ${{ needs.deploy.outputs.MSI_SIG }}
+          x86_64_MSI_SIG: ${{ needs.deploy.outputs.x86_64_MSI_SIG }}
           x86_64_APP_SIG: ${{ needs.deploy.outputs.x86_64_APP_SIG }}
           ARM64_APP_SIG: ${{ needs.deploy.outputs.ARM64_APP_SIG }}
         run: |
@@ -252,6 +253,10 @@ jobs:
               "windows-x86_64": {
                 "signature": "${MSI_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64_en-US.msi"
+              },
+              "windows-aarch64": {
+                "signature": "",
+                "url": ""
               },
               "darwin-x86_64": {
                 "signature": "${x86_64_APP_SIG}",
