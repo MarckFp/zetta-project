@@ -149,7 +149,6 @@ jobs:
             git add .
             git commit -m "Ios Init"
             git push origin main
-#            cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
           elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
             trunk build --release --public-url "/zetta-project"
           else
