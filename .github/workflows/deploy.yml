@@ -148,6 +148,9 @@ jobs:
 
       - name: Build & Deploy ${{ matrix.name }} 🚀
         shell: bash
+        env:
+          CODE_SIGNING_ALLOWED: "NO"
+          CODE_SIGNING_REQUIRED: "NO"
         run: |
           case "${{ matrix.name }}" in
           "Android 🤖")
