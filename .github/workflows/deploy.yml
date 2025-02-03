@@ -76,7 +76,15 @@ jobs:
             name: 'Web 🌐'
     steps:
       - name: Checkout 🛎️
+        if: ${{ matrix.name != 'iOS 📱'}}
         uses: actions/checkout@v4
+      
+      - name: Checkout 🛎️
+        if: ${{ matrix.name == 'iOS 📱'}}
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Set Version 📝
         shell: bash
