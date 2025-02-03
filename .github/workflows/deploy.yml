@@ -66,9 +66,9 @@ jobs:
             name: 'Android 🤖'
           # iOS
           # TODO: Not working without Apple Developer Account
-#          - os: 'macos-15'
-#            target: 'aarch64-apple-ios aarch64-apple-ios-sim'
-#            name: 'iOS 📱'
+          - os: 'macos-15'
+            target: 'aarch64-apple-ios aarch64-apple-ios-sim'
+            name: 'iOS 📱'
           # Web
           - os: 'macos-15'
             target: ''
