@@ -143,11 +143,16 @@ jobs:
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
             cargo tauri android build --ci --apk --aab --target aarch64 armv7 i686 x86_64
           elif [[ "${{ matrix.name }}" == "iOS 📱" ]]; then
+            echo "Init iOS"
             cargo tauri ios init --ci
+            echo "Github config init"
             git config --global user.email ${{ secrets.GH_EMAIL }}
             git config --global user.name GitHub_Runner
+            echo "Add changes"
             git add .
+            echo "Commit changes"
             git commit -m "Ios Init"
+            echo "Push changes"
             git push origin main
           elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
             trunk build --release --public-url "/zetta-project"
