@@ -319,7 +319,7 @@ jobs:
 
       - name: Download app 📥
         shell: bash
-        run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}.aab > Zetta.Project_${{ github.ref_name }}.aab
+        run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}.aab > Zetta.Project_${{ github.ref_name }}.apk
 
       - name: Upload to Amazon AppStore 📤
         uses: AmeyaJain-25/amazon-appstore-app-upload@v1.0.0
@@ -327,4 +327,4 @@ jobs:
           client_id: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
           client_secret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
           app_id: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
-          apk_release_file: Zetta.Project_${{ github.ref_name }}.aab
+          apk_release_file: Zetta.Project_${{ github.ref_name }}.apk
