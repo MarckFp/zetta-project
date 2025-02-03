@@ -43,9 +43,9 @@ jobs:
             target: 'x86_64-pc-windows-msvc'
             name: 'Windows x86_64 🪟'
           # TODO: Windows ARM Not Working yet
-#          - os: 'windows-2025-arm'
-#            target: 'aarch64-pc-windows-msvc'
-#            name: 'Windows ARM64 🪟'
+          - os: 'windows-2025'
+            target: 'aarch64-pc-windows-msvc'
+            name: 'Windows ARM64 🪟'
           # MacOS
           - os: 'macos-15'
             target: 'aarch64-apple-darwin'
@@ -149,7 +149,7 @@ jobs:
             git add .
             git commit -m "Ios Init"
             git push origin main
-            cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
+#            cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
           elif [[ "${{ matrix.name }}" == "Web 🌐" ]]; then
             trunk build --release --public-url "/zetta-project"
           else
