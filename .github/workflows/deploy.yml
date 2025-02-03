@@ -138,6 +138,12 @@ jobs:
           base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
           echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
 
+      - name: Configure Git
+        if: ${{ matrix.name == 'iOS 📱'}}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Build & Deploy ${{ matrix.name }} 🚀
         shell: bash
         run: |
@@ -147,17 +153,7 @@ jobs:
             ;;
 
           "iOS 📱")
-            echo "Git Checkout"
-            git checkout main
-            echo "Init iOS"
             cargo tauri ios init --ci
-            echo "Git Add changes"
-            git add .
-            echo "Git Commit changes"
-            git commit -m "Ios Init"
-            echo "Git Push changes"
-            git push origin main
-            cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
             ;;
 
           "Web 🌐")
@@ -168,6 +164,15 @@ jobs:
             cargo tauri build --ci --target ${{ matrix.target }}
             ;;
           esac
+
+      - name: Ios Init
+        if: ${{ matrix.name == 'iOS 📱'}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add .
+          git commit -m "iOS Init"
+          git push origin main
 
       - name: Setup Github Pages ⚙️
         if: ${{ matrix.name == 'Web 🌐'}}
