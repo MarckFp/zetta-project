@@ -67,9 +67,9 @@ jobs:
             name: 'Android 🤖'
           # iOS
           # TODO: Not working without Apple Developer Account
-          - os: 'macos-15'
-            target: 'aarch64-apple-ios aarch64-apple-ios-sim'
-            name: 'iOS 📱'
+#          - os: 'macos-15'
+#            target: 'aarch64-apple-ios aarch64-apple-ios-sim'
+#            name: 'iOS 📱'
           # Web
           - os: 'macos-15'
             target: ''
@@ -313,3 +313,24 @@ jobs:
           }
           EOF
           gh release upload ${{ github.ref_name }} updater.json
+  amazon-appstore:
+    name: Amazon Appstore 📦
+    runs-on: macos-15
+    needs: [deploy]
+    environment:
+      name: production
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Download app 📥
+        shell: bash
+        run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_0.4.1.aab > Zetta.Project_0.4.1.aab
+
+      - name: Upload Amazon AppStore 📤
+        uses: ALJAZEERAPLUS/amazon-appstore-action@v1
+        with:
+          client-id: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
+          client-secret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
+          app-id: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
+          apk-file: Zetta.Project_0.4.1.aab
