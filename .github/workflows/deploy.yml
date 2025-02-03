@@ -246,7 +246,7 @@ jobs:
               echo "x86_64_APP_SIG=$(cat target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz.sig)" >> $GITHUB_OUTPUT
               ;;
 
-            "MacOS ARM64 🍏"
+            "MacOS ARM64 🍏")
               mv target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project.app.tar.gz target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_aarch64.app.tar.gz
               mv target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project.app.tar.gz.sig target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_aarch64.app.tar.gz.sig
               gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/dmg/Zetta\ Project_${{ github.ref_name }}_aarch64.dmg \
