@@ -148,9 +148,6 @@ jobs:
 
       - name: Build & Deploy ${{ matrix.name }} 🚀
         shell: bash
-        env:
-          CODE_SIGNING_ALLOWED: "NO"
-          CODE_SIGNING_REQUIRED: "NO"
         run: |
           case "${{ matrix.name }}" in
           "Android 🤖")
@@ -158,6 +155,8 @@ jobs:
             ;;
 
           "iOS 📱")
+            export CODE_SIGNING_ALLOWED="NO"
+            export CODE_SIGNING_REQUIRED="NO"
             cargo tauri ios build --ci --target aarch64 aarch64-sim x86_64
             ;;
 
