@@ -109,12 +109,6 @@ jobs:
         if: ${{ matrix.name == 'Android 🤖'}}
         uses: android-actions/setup-android@v3
 
-      - name: Setup VCPKG Windows 🛠️
-        if: ${{ matrix.os == 'windows-latest'}}
-        run: |
-          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
-          vcpkg install openssl:x64-windows-static-md
-
       - name: Install Cargo Binstall 🛠️
         uses: cargo-bins/cargo-binstall@main
 
@@ -314,7 +308,7 @@ jobs:
           EOF
           gh release upload ${{ github.ref_name }} updater.json
   amazon-appstore:
-    name: Amazon Appstore 📦
+    name: Amazon AppStore 📦
     runs-on: macos-15
     needs: [deploy]
     environment:
@@ -327,10 +321,10 @@ jobs:
         shell: bash
         run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}.aab > Zetta.Project_${{ github.ref_name }}.aab
 
-      - name: Upload Amazon AppStore 📤
-        uses: galonga/upload-amazon-appstore@v1.0.4
+      - name: Upload to Amazon AppStore 📤
+        uses: AmeyaJain-25/amazon-appstore-app-upload@v1.0.0
         with:
-          clientId: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
-          clientSecret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
-          appId: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
-          releaseFile: Zetta.Project_${{ github.ref_name }}.aab
+          client_id: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
+          client_secret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
+          app_id: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
+          apk_release_file: Zetta.Project_${{ github.ref_name }}.aab
