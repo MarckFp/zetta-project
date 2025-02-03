@@ -51,8 +51,8 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        CFBundleShortVersionString: 0.3.20
-        CFBundleVersion: 0.3.20
+        CFBundleShortVersionString: 0.0.0-git
+        CFBundleVersion: 0.0.0-git
     entitlements:
       path: zetta-project_iOS/zetta-project_iOS.entitlements
     scheme:

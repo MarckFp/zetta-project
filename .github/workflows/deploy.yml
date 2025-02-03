@@ -85,10 +85,18 @@ jobs:
         run: |
           mv Cargo.toml Cargo.toml.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
+
           mv src-tauri/Cargo.toml src-tauri/Cargo.toml.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.toml.orig >src-tauri/Cargo.toml
+
           mv src-tauri/tauri.conf.json src-tauri/tauri.conf.json.orig
           sed "s/\"version\": \"0\\.0\\.0-git\"/\"version\": \"${RELEASE_TAG##*\/v}\"/" src-tauri/tauri.conf.json.orig >src-tauri/tauri.conf.json
+
+          mv src-tauri/gen/apple/project.yml src-tauri/gen/apple/project.yml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/gen/apple/project.yml.orig >src-tauri/gen/apple/project.yml
+
+          mv src-tauri/gen/apple/zetta-project_iOS/Info.plist src-tauri/gen/apple/zetta-project_iOS/Info.plist.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/gen/apple/zetta-project_iOS/Info.plist.orig >src-tauri/gen/apple/zetta-project_iOS/Info.plist
 
       - name: Setup Java ☕
         if: ${{ matrix.name == 'Android 🤖'}}
