@@ -1,6 +1,6 @@
 [package]
 name = "zetta-project"
-version = "0.3.20"
+version = "0.0.0-git"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
