@@ -328,9 +328,9 @@ jobs:
         run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_0.4.1.aab > Zetta.Project_0.4.1.aab
 
       - name: Upload Amazon AppStore 📤
-        uses: ALJAZEERAPLUS/amazon-appstore-action@v1
+        uses: galonga/upload-amazon-appstore@v1.0.2
         with:
-          client-id: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
-          client-secret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
-          app-id: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
-          apk-file: Zetta.Project_0.4.1.aab
+          clientId: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
+          clientSecret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
+          appId: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
+          apkFile: Zetta.Project_0.4.1.aab
