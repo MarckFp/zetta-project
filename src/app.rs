@@ -1,3 +1,5 @@
+leptos_i18n::load_locales!();
+use crate::i18n::*;
 use leptos::task::spawn_local;
 use leptos::{ev::SubmitEvent, prelude::*};
 
@@ -7,6 +9,7 @@ async fn greet(name: &str) -> String {
 
 #[component]
 pub fn App() -> impl IntoView {
+    let i18n = use_i18n();
     let (name, set_name) = signal(String::new());
     let (greet_msg, set_greet_msg) = signal(String::new());
     const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -31,7 +34,7 @@ pub fn App() -> impl IntoView {
 
     view! {
         <main class="container">
-            <h1>{format!("Welcome Zetta Project v{}", VERSION)}</h1>
+            <h1>{t!(i18n, welcome)}{format!(" Zetta Project v{}", VERSION)}</h1>
 
             <div class="row">
                 <a href="https://tauri.app" target="_blank">
