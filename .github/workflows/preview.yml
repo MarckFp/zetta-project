@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-15
     environment:
       name: development
-      url: ${{ steps.web-deploy.outputs.deployment-url }}
+      url: ${{ steps.web-deploy.outputs.pages-deployment-alias-url }}
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4

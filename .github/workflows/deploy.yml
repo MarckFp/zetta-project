@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     environment:
       name: production
-      url: ${{ steps.web-deploy.outputs.deployment-url }}
+      url: ${{ steps.web-deploy.outputs.pages-deployment-alias-url }}
     permissions:
       pages: write
       id-token: write
