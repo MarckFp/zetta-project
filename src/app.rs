@@ -4,7 +4,7 @@ use leptos::task::spawn_local;
 use leptos::{ev::SubmitEvent, prelude::*};
 
 async fn greet(i18n: leptos_i18n::I18nContext<Locale, I18nKeys>, name: &str) -> String {
-    return td_string!(i18n.get_locale_untracked(), greeted, name);
+    td_string!(i18n.get_locale_untracked(), greeted, name)
 }
 
 #[component]
