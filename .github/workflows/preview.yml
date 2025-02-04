@@ -1,0 +1,50 @@
+name: 'Preview 🌐'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  preview:
+    name: Preview Web 🌐
+    runs-on: macos-15
+    environment:
+      name: development
+      url: ${{ steps.web-deploy.outputs.deployment-url }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Set Version 📝
+        shell: bash
+        env:
+          RELEASE_TAG: "vBeta"
+        run: |
+          mv Cargo.toml Cargo.toml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" Cargo.toml.orig >Cargo.toml
+
+          mv src-tauri/Cargo.toml src-tauri/Cargo.toml.orig
+          sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.toml.orig >src-tauri/Cargo.toml
+
+      - name: Install Cargo Binstall 🛠️
+        uses: cargo-bins/cargo-binstall@main
+
+      - name: Install Trunk 🛠️
+        shell: bash
+        run: cargo binstall trunk -y --locked
+
+      - name: Setup Rust Targets 🦀
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: Build 🔨
+        shell: bash
+        run: trunk build --release
+
+      - name: Deploy 🚀
+        id: web-deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .dist --project-name=zetta-project --branch=preview

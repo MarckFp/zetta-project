@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     environment:
       name: production
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.web-deploy.outputs.deployment-url }}
     permissions:
       pages: write
       id-token: write
@@ -163,22 +163,14 @@ jobs:
             ;;
           esac
 
-      - name: Setup Github Pages ⚙️
+      - name: Deploy Web 🌐 🚀
+        id: web-deploy
         if: ${{ matrix.name == 'Web 🌐'}}
-        uses: actions/configure-pages@v5
+        uses: cloudflare/wrangler-action@v3
         with:
-          enablement: true
-
-      - name: Upload Github Pages 📤
-        if: ${{ matrix.name == 'Web 🌐'}}
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist/
-
-      - name: Deploy Github Pages 🌐
-        if: ${{ matrix.name == 'Web 🌐'}}
-        id: deployment
-        uses: actions/deploy-pages@v4
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .dist --project-name=zetta-project --branch=main
 
       - name: Upload Artifacts 📦
         if: ${{ matrix.name != 'Web 🌐'}}
@@ -307,24 +299,25 @@ jobs:
           }
           EOF
           gh release upload ${{ github.ref_name }} updater.json
-  amazon-appstore:
-    name: Amazon AppStore 📦
-    runs-on: macos-15
-    needs: [deploy]
-    environment:
-      name: production
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-
-      - name: Download app 📥
-        shell: bash
-        run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}.aab > Zetta.Project_${{ github.ref_name }}.apk
-
-      - name: Upload to Amazon AppStore 📤
-        uses: AmeyaJain-25/amazon-appstore-app-upload@v1.0.0
-        with:
-          client_id: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
-          client_secret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
-          app_id: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
-          apk_release_file: Zetta.Project_${{ github.ref_name }}.apk
+# Not working for the moment
+#  amazon-appstore:
+#    name: Amazon AppStore 📦
+#    runs-on: macos-15
+#    needs: [deploy]
+#    environment:
+#      name: production
+#    steps:
+#      - name: Checkout 🛎️
+#        uses: actions/checkout@v4
+#
+#      - name: Download app 📥
+#        shell: bash
+#        run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}.apk > Zetta.Project_${{ github.ref_name }}.apk
+#
+#      - name: Upload to Amazon AppStore 📤
+#        uses: AmeyaJain-25/amazon-appstore-app-upload@v1.0.0
+#        with:
+#          client_id: ${{secrets.AMAZON_APPSTORE_CLIENT_ID}}
+#          client_secret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
+#          app_id: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
+#          apk_release_file: Zetta.Project_${{ github.ref_name }}.apk
