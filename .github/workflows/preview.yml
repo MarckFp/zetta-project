@@ -12,6 +12,9 @@ jobs:
     environment:
       name: development
       url: ${{ steps.web-deploy.outputs.pages-deployment-alias-url }}
+    concurrency:
+      group: preview
+      cancel-in-progress: true
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4

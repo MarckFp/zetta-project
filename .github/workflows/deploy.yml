@@ -155,7 +155,7 @@ jobs:
             ;;
 
           "Web 🌐")
-            trunk build --release --public-url "/zetta-project"
+            trunk build --release
             ;;
 
           *)
