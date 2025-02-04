@@ -3,8 +3,8 @@ use crate::i18n::*;
 use leptos::task::spawn_local;
 use leptos::{ev::SubmitEvent, prelude::*};
 
-async fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+async fn greet(i18n: leptos_i18n::I18nContext<Locale, I18nKeys>, name: &str) -> String {
+    return td_string!(i18n.get_locale_untracked(), greeted, name);
 }
 
 #[component]
@@ -27,14 +27,14 @@ pub fn App() -> impl IntoView {
                 return;
             }
 
-            let new_msg = greet(&name).await;
+            let new_msg = greet(i18n, &name).await;
             set_greet_msg.set(new_msg);
         });
     };
 
     view! {
         <main class="container">
-            <h1>{t!(i18n, welcome)}{format!(" Zetta Project v{}", VERSION)}</h1>
+            <h1>{move || t!(i18n, welcome)}{format!("Zetta Project v{}", VERSION)}</h1>
 
             <div class="row">
                 <a href="https://tauri.app" target="_blank">
@@ -44,15 +44,15 @@ pub fn App() -> impl IntoView {
                     <img src="public/leptos.svg" class="logo leptos" alt="Leptos logo"/>
                 </a>
             </div>
-            <p>"Click on the Tauri and Leptos logos to learn more."</p>
+            <p>{move || t!(i18n, click_leptos)}</p>
 
             <form class="row" on:submit=greet>
                 <input
                     id="greet-input"
-                    placeholder="Enter a name..."
+                    placeholder={move || t!(i18n, enter_name).to_html()}
                     on:input=update_name
                 />
-                <button type="submit">"Greet"</button>
+                <button type="submit">{move || t!(i18n, greet)}</button>
             </form>
             <p>{ move || greet_msg.get() }</p>
         </main>

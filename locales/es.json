@@ -1,3 +1,7 @@
 {
-    "welcome": "Bienvenido a"
+    "welcome": "Bienvenido a ",
+    "click_leptos": "Haz click en el logo de Tauri o Leptos para aprender más.",
+    "enter_name": "Introduce un nombre...",
+    "greet": "Saludar",
+    "greeted": "¡Hola {{ name }}! ¡Has sido saludado desde Rust!"
 }
