@@ -27,6 +27,18 @@ jobs:
           mv src-tauri/Cargo.toml src-tauri/Cargo.toml.orig
           sed "s/0\\.0\\.0-git/${RELEASE_TAG##*\/v}/" src-tauri/Cargo.toml.orig >src-tauri/Cargo.toml
 
+      - name: Rust Cache 🦀
+        uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
       - name: Install Cargo Binstall 🛠️
         uses: cargo-bins/cargo-binstall@main
 
@@ -47,4 +59,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .dist --project-name=zetta-project --branch=preview
+          command: pages deploy dist --project-name=zetta-project --branch=preview
