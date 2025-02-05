@@ -18,11 +18,12 @@
 ## Supported Devices
 
 - MacOS ARM64
-- MacOS x86_64
+- MacOS 64 bit (Intel)
 - Windows ARM64
-- Windows x86_64
+- Windows 64 bit
+- Windows 32 bit
 - Linux ARM64
-- Linux x86_64
+- Linux 64 bit
 - Android
 
 ## Recommended IDE Setup
