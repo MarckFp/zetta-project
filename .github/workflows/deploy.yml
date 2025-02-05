@@ -31,8 +31,8 @@ jobs:
       #Windows
       x64_MSI_SIG: ${{ steps.gen_artifacts.outputs.x64_MSI_SIG }}
       x64_EXE_SIG: ${{ steps.gen_artifacts.outputs.x64_EXE_SIG }}
-      x86_MSI_SIG: ${{ needs.deploy.outputs.x86_MSI_SIG }}
-      x86_EXE_SIG: ${{ needs.deploy.outputs.x86_EXE_SIG }}
+      x86_MSI_SIG: ${{ steps.gen_artifacts.outputs.x86_MSI_SIG }}
+      x86_EXE_SIG: ${{ steps.gen_artifacts.outputs.x86_EXE_SIG }}
       ARM64_MSI_SIG: ${{ steps.gen_artifacts.outputs.ARM64_MSI_SIG }}
       ARM64_EXE_SIG: ${{ steps.gen_artifacts.outputs.ARM64_EXE_SIG }}
       #MacOS
@@ -295,14 +295,6 @@ jobs:
                 "signature": "${ARM64_APPIMAGE_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_aarch64.AppImage"
               },
-              ""linux-i686": {
-                "signature": "",
-                "url": ""
-              },
-              "linux-armv7": {
-                "signature": "",
-                "url": ""
-              },
               "windows-x86_64": {
                 "signature": "${x64_MSI_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64_en-US.msi"
@@ -315,10 +307,6 @@ jobs:
                 "signature": "${x86_MSI_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64.app.tar.gz"
               },
-              "windows-armv7": {
-                "signature": "",
-                "url": ""
-              },
               "darwin-x86_64": {
                 "signature": "${x64_APP_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64.app.tar.gz"
@@ -326,14 +314,6 @@ jobs:
               "darwin-aarch64": {
                 "signature": "${ARM64_APP_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_aarch64.app.tar.gz"
-              },
-              "darwin-i686": {
-                "signature": "",
-                "url": ""
-              },
-              "darwin-armv7": {
-                "signature": "",
-                "url": ""
               }
             }
           }
