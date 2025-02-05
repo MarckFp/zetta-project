@@ -279,6 +279,10 @@ jobs:
                 "signature": "${ARM64_APPIMAGE_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_aarch64.AppImage"
               },
+              "linux-armv7": {
+                "signature": "",
+                "url": ""
+              },
               "windows-x86_64": {
                 "signature": "${x86_64_MSI_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64_en-US.msi"
@@ -286,6 +290,10 @@ jobs:
               "windows-aarch64": {
                 "signature": "${ARM64_MSI_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_arm64_en-US.msi"
+              },
+              "windows-armv7": {
+                "signature": "",
+                "url": ""
               },
               "darwin-x86_64": {
                 "signature": "${x86_64_APP_SIG}",
@@ -321,3 +329,71 @@ jobs:
 #          client_secret: ${{secrets.AMAZON_APPSTORE_CLIENT_SECRET}}
 #          app_id: ${{ secrets.AMAZON_APPSTORE_APP_ID }}
 #          apk_release_file: Zetta.Project_${{ github.ref_name }}.apk
+#  google-play:
+#    name: Google Play Store 📦
+#    runs-on: macos-15
+#    needs: [deploy]
+#    environment:
+#      name: production
+#    steps:
+#      - name: Checkout 🛎️
+#        uses: actions/checkout@v4
+#
+#      - name: Download app 📥
+#        shell: bash
+#        run: curl -L https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}.aab > Zetta.Project_${{ github.ref_name }}.aab
+#
+#      - name: Upload to Google Play Store 📤
+#        uses: r0adkll/upload-google-play@v1
+#        with:
+#          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+#          packageName: dev.pages.zetta-project
+#          releaseFiles: Zetta.Project_${{ github.ref_name }}.aab
+#          track: production
+#  ms-store:
+#    name: Microsoft Store 📦
+#    runs-on: macos-15
+#    needs: [deploy]
+#    environment:
+#      name: production
+#    steps:
+#      - name: Checkout 🛎️
+#        uses: actions/checkout@v4
+#
+#      - name: Configure Store Credentials 🔑
+#        uses: microsoft/store-submission@v1
+#        with:
+#          command: configure
+#          type: win32
+#          seller-id: ${{ secrets.MS_SELLER_ID }}
+#          product-id: ${{ secrets.MS_PRODUCT_ID }}
+#          tenant-id: ${{ secrets.MS_TENANT_ID }}
+#          client-id: ${{ secrets.MS_CLIENT_ID }}
+#          client-secret: ${{ secrets.MS_CLIENT_SECRET }}
+#
+#      - name: Update Draft Submission 📝
+#        uses: microsoft/store-submission@v1
+#        with:
+#          command: update
+#          product-update: |
+#            '{
+#              "packages":[
+#                {
+#                  "packageUrl":"https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64_en-US.msi",
+#                  "languages":["en"],
+#                  "architectures":["X64", "X86"],
+#                  "isSilentInstall":true
+#                },
+#                {
+#                  "packageUrl":"https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_arm64_en-US.msi",
+#                  "languages":["en"],
+#                  "architectures":["Arm64", "Arm"],
+#                  "isSilentInstall":true
+#                }
+#              ]
+#            }'
+#
+#      - name: Publish Submission 🚀
+#        uses: microsoft/store-submission@v1
+#        with:
+#          command: publish
