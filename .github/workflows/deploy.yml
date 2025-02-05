@@ -26,15 +26,17 @@ jobs:
       discussions: write
     outputs:
       #Linux
-      x86_64_APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.x86_64_APPIMAGE_SIG }}
+      x64_APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.x64_APPIMAGE_SIG }}
       ARM64_APPIMAGE_SIG: ${{ steps.gen_artifacts.outputs.ARM64_APPIMAGE_SIG }}
       #Windows
-      x86_64_MSI_SIG: ${{ steps.gen_artifacts.outputs.x86_64_MSI_SIG }}
-      x86_64_EXE_SIG: ${{ steps.gen_artifacts.outputs.x86_64_EXE_SIG }}
+      x64_MSI_SIG: ${{ steps.gen_artifacts.outputs.x64_MSI_SIG }}
+      x64_EXE_SIG: ${{ steps.gen_artifacts.outputs.x64_EXE_SIG }}
+      x86_MSI_SIG: ${{ needs.deploy.outputs.x86_MSI_SIG }}
+      x86_EXE_SIG: ${{ needs.deploy.outputs.x86_EXE_SIG }}
       ARM64_MSI_SIG: ${{ steps.gen_artifacts.outputs.ARM64_MSI_SIG }}
       ARM64_EXE_SIG: ${{ steps.gen_artifacts.outputs.ARM64_EXE_SIG }}
       #MacOS
-      x86_64_APP_SIG: ${{ steps.gen_artifacts.outputs.x86_64_APP_SIG }}
+      x64_APP_SIG: ${{ steps.gen_artifacts.outputs.x64_APP_SIG }}
       ARM64_APP_SIG: ${{ steps.gen_artifacts.outputs.ARM64_APP_SIG }}
     strategy:
       fail-fast: false
@@ -43,13 +45,10 @@ jobs:
           # Windows
           - os: 'windows-2025'
             target: 'x86_64-pc-windows-msvc'
-            name: 'Windows x86_64 🪟'
+            name: 'Windows x64 🪟'
           - os: 'windows-2025'
             target: 'aarch64-pc-windows-msvc'
             name: 'Windows ARM64 🪟'
-          - os: 'windows-2025'
-            target: 'armv7-pc-windows-msvc'
-            name: 'Windows ARMV7 🪟'
           - os: 'windows-2025'
             target: 'i686-pc-windows-msvc'
             name: 'Windows x86 🪟'
@@ -59,23 +58,14 @@ jobs:
             name: 'MacOS ARM64 🍏'
           - os: 'macos-15'
             target: 'x86_64-apple-darwin'
-            name: 'MacOS x86_64 🍏'
-          - os: 'macos-15'
-            target: 'armv7-apple-darwin'
-            name: 'MacOS ARMV7 🍏'
-          - os: 'macos-15'
-            target: 'i686-apple-darwin'
-            name: 'MacOS x86 🍏'
+            name: 'MacOS x64 🍏'
           # Linux
           - os: 'ubuntu-24.04'
             target: 'x86_64-unknown-linux-gnu'
-            name: 'Linux x86_64 🐧'
+            name: 'Linux x64 🐧'
           - os: 'ubuntu-24.04-arm'
             target: 'aarch64-unknown-linux-gnu'
             name: 'Linux ARM64 🐧'
-          - os: 'ubuntu-24.04-arm'
-            target: 'armv7-unknown-linux-gnu'
-            name: 'Linux ARMV7 🐧'
           - os: 'ubuntu-24.04-arm'
             target: 'i686-unknown-linux-gnu'
             name: 'Linux x86 🐧'
@@ -133,14 +123,17 @@ jobs:
       - name: Setup Dependencies & Configs 🛠️
         shell: bash
         run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+          
           if [[ "${{ matrix.os }}" == "ubuntu-24.04" || "${{ matrix.os }}" == "ubuntu-24.04-arm"  ]]; then
             sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils -y
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           fi
 
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
             sdkmanager "ndk;$NDK_VERSION"
             echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
+          elif [[ "${{ matrix.name }}" == "Linux x86 🐧" ]]; then
+            sudo apt install gcc-multilib pkg-config libglib2.0-dev:i386  gcc-i686-linux-gnu g++-i686-linux-gnu -y
           fi
 
           cargo binstall trunk -y --locked
@@ -196,12 +189,20 @@ jobs:
         id: gen_artifacts
         run: |
           case "${{ matrix.name }}" in
-            "Windows x86_64 🪟")
+            "Windows x64 🪟")
               gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi \
                 target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe
               
-              echo "x86_64_MSI_SIG=$(cat target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi.sig)" >> $GITHUB_OUTPUT
-              echo "x86_64_EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe.sig)" >> $GITHUB_OUTPUT
+              echo "x64_MSI_SIG=$(cat target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x64_en-US.msi.sig)" >> $GITHUB_OUTPUT
+              echo "x64_EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x64-setup.exe.sig)" >> $GITHUB_OUTPUT
+              ;;
+
+            "Windows x86 🪟")
+              gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x86_en-US.msi \
+                target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x86-setup.exe
+              
+              echo "x86_MSI_SIG=$(cat target/${{ matrix.target }}/release/bundle/msi/Zetta\ Project_${{ github.ref_name }}_x86_en-US.msi.sig)" >> $GITHUB_OUTPUT
+              echo "x86_EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_x86-setup.exe.sig)" >> $GITHUB_OUTPUT
               ;;
 
             "Windows ARM64 🪟")
@@ -212,12 +213,12 @@ jobs:
               echo "ARM64_EXE_SIG=$(cat target/${{ matrix.target }}/release/bundle/nsis/Zetta\ Project_${{ github.ref_name }}_arm64-setup.exe.sig)" >> $GITHUB_OUTPUT
               ;;
 
-            "Linux x86_64 🐧")
+            "Linux x64 🐧")
               gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/deb/Zetta\ Project_${{ github.ref_name }}_amd64.deb \
                 target/${{ matrix.target }}/release/bundle/rpm/Zetta\ Project-${{ github.ref_name }}-1.x86_64.rpm \
                 target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage
 
-              echo "x86_64_APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage.sig)" >> $GITHUB_OUTPUT
+              echo "x64_APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_amd64.AppImage.sig)" >> $GITHUB_OUTPUT
               ;;
 
             "Linux ARM64 🐧")
@@ -228,13 +229,13 @@ jobs:
               echo "ARM64_APPIMAGE_SIG=$(cat target/${{ matrix.target }}/release/bundle/appimage/Zetta\ Project_${{ github.ref_name }}_aarch64.AppImage.sig)" >> $GITHUB_OUTPUT
               ;;
 
-            "MacOS x86_64 🍏")
+            "MacOS x64 🍏")
               mv target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project.app.tar.gz target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz
               mv target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project.app.tar.gz.sig target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz.sig
               gh release upload ${{ github.ref_name }} target/${{ matrix.target }}/release/bundle/dmg/Zetta\ Project_${{ github.ref_name }}_x64.dmg \
                 target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz
 
-              echo "x86_64_APP_SIG=$(cat target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz.sig)" >> $GITHUB_OUTPUT
+              echo "x64_APP_SIG=$(cat target/${{ matrix.target }}/release/bundle/macos/Zetta\ Project_${{ github.ref_name }}_x64.app.tar.gz.sig)" >> $GITHUB_OUTPUT
               ;;
 
             "MacOS ARM64 🍏")
@@ -273,15 +274,17 @@ jobs:
       - name: Generate updater 🔄
         env:
           #Linux
-          x86_64_APPIMAGE_SIG: ${{ needs.deploy.outputs.x86_64_APPIMAGE_SIG }}
+          x64_APPIMAGE_SIG: ${{ needs.deploy.outputs.x64_APPIMAGE_SIG }}
           ARM64_APPIMAGE_SIG: ${{ needs.deploy.outputs.ARM64_APPIMAGE_SIG }}
           #Windows
-          x86_64_MSI_SIG: ${{ needs.deploy.outputs.x86_64_MSI_SIG }}
-          x86_64_EXE_SIG: ${{ needs.deploy.outputs.x86_64_EXE_SIG }}
+          x64_MSI_SIG: ${{ needs.deploy.outputs.x64_MSI_SIG }}
+          x64_EXE_SIG: ${{ needs.deploy.outputs.x64_EXE_SIG }}
+          x86_MSI_SIG: ${{ needs.deploy.outputs.x86_MSI_SIG }}
+          x86_EXE_SIG: ${{ needs.deploy.outputs.x86_EXE_SIG }}
           ARM64_MSI_SIG: ${{ needs.deploy.outputs.ARM64_MSI_SIG }}
           ARM64_EXE_SIG: ${{ needs.deploy.outputs.ARM64_EXE_SIG }}
           #MacOS
-          x86_64_APP_SIG: ${{ needs.deploy.outputs.x86_64_APP_SIG }}
+          x64_APP_SIG: ${{ needs.deploy.outputs.x64_APP_SIG }}
           ARM64_APP_SIG: ${{ needs.deploy.outputs.ARM64_APP_SIG }}
         run: |
           cat <<EOF > updater.json
@@ -290,36 +293,48 @@ jobs:
             "pub_date": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
             "platforms": {
               "linux-x86_64": {
-                "signature": "${x86_64_APPIMAGE_SIG}",
+                "signature": "${x64_APPIMAGE_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_amd64.AppImage"
               },
               "linux-aarch64": {
                 "signature": "${ARM64_APPIMAGE_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_aarch64.AppImage"
               },
+              ""linux-i686": {
+                "signature": "",
+                "url": ""
+              },
               "linux-armv7": {
                 "signature": "",
                 "url": ""
               },
               "windows-x86_64": {
-                "signature": "${x86_64_MSI_SIG}",
+                "signature": "${x64_MSI_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64_en-US.msi"
               },
               "windows-aarch64": {
                 "signature": "${ARM64_MSI_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_arm64_en-US.msi"
               },
+              "windows-i686": {
+                "signature": "${x86_MSI_SIG}",
+                "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64.app.tar.gz"
+              },
               "windows-armv7": {
                 "signature": "",
                 "url": ""
               },
               "darwin-x86_64": {
-                "signature": "${x86_64_APP_SIG}",
+                "signature": "${x64_APP_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_x64.app.tar.gz"
               },
               "darwin-aarch64": {
                 "signature": "${ARM64_APP_SIG}",
                 "url": "https://github.com/MarckFp/zetta-project/releases/download/${{ github.ref_name }}/Zetta.Project_${{ github.ref_name }}_aarch64.app.tar.gz"
+              },
+              "darwin-i686": {
+                "signature": "",
+                "url": ""
               },
               "darwin-armv7": {
                 "signature": "",
