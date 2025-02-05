@@ -1,6 +1,6 @@
 name: zetta-project
 options:
-  bundleIdPrefix: dev.pages.zetta-project
+  bundleIdPrefix: com.zetta-project.app
   deploymentTarget:
     iOS: 13.0
 fileGroups: [../../src]
@@ -11,7 +11,7 @@ settingGroups:
   app:
     base:
       PRODUCT_NAME: Zetta Project
-      PRODUCT_BUNDLE_IDENTIFIER: dev.pages.zetta-project
+      PRODUCT_BUNDLE_IDENTIFIER: com.zetta-project.app
 targetTemplates:
   app:
     type: application

@@ -1,3 +1,3 @@
-package dev.pages.zetta_project
+package com.zetta_project.app
 
 class MainActivity : TauriActivity()
