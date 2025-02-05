@@ -125,6 +125,10 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           
+          if [[ "${{ matrix.name }}" == "Linux x86 🐧" ]]; then
+            sudo dpkg --add-architecture i386
+          fi
+
           if [[ "${{ matrix.os }}" == "ubuntu-24.04" || "${{ matrix.os }}" == "ubuntu-24.04-arm"  ]]; then
             sudo apt update -y && sudo apt install libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf xdg-utils -y
           fi
@@ -132,8 +136,6 @@ jobs:
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
             sdkmanager "ndk;$NDK_VERSION"
             echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
-          elif [[ "${{ matrix.name }}" == "Linux x86 🐧" ]]; then
-            sudo apt install gcc-multilib pkg-config libglib2.0-dev:i386  gcc-i686-linux-gnu g++-i686-linux-gnu -y
           fi
 
           cargo binstall trunk -y --locked
