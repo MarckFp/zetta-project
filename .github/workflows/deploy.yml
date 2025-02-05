@@ -53,12 +53,12 @@ jobs:
             os: 'windows-2025'
             target: 'aarch64-pc-windows-msvc'
           # MacOS
-          - name: 'MacOS ARM64 🍏'
-            os: 'macos-15'
-            target: 'aarch64-apple-darwin'
           - name: 'MacOS x64 🍏'
             os: 'macos-15'
             target: 'x86_64-apple-darwin'
+          - name: 'MacOS ARM64 🍏'
+            os: 'macos-15'
+            target: 'aarch64-apple-darwin'
           # Linux
           - name: 'Linux x64 🐧'
             os: 'ubuntu-24.04'
@@ -132,6 +132,8 @@ jobs:
           if [[ "${{ matrix.name }}" == "Android 🤖" ]]; then
             sdkmanager "ndk;$NDK_VERSION"
             echo "NDK_HOME=$ANDROID_SDK_ROOT/ndk/$NDK_VERSION" >> $GITHUB_ENV
+          elif [[ "${{ matrix.name }}" == "Linux x86 🐧" ]]; then
+            sudo apt install gcc-multilib pkg-config libglib2.0-dev:i386  gcc-i686-linux-gnu g++-i686-linux-gnu -y
           fi
 
           cargo binstall trunk -y --locked
